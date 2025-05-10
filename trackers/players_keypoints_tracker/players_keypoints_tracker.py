@@ -7,6 +7,7 @@ import cv2
 from PIL import Image
 from ultralytics import YOLO
 import supervision as sv
+import torch
 
 from trackers.tracker import Object, Tracker, NoPredictFrames
 
@@ -297,7 +298,7 @@ class PlayerKeypointsTracker(Tracker):
             players_keypoints = [] 
 
             players_keypoints_detection = result.keypoints.xy.squeeze(0)
-            if len(players_keypoints_detection) == 2:
+            if len(players_keypoints_detection) == 2 and not isinstance(players_keypoints_detection[0], torch.Tensor):
                 players_keypoints_detection = players_keypoints_detection.unsqueeze(0)
 
             for player_keypoints_detection in players_keypoints_detection:
@@ -307,8 +308,8 @@ class PlayerKeypointsTracker(Tracker):
                             id=i,
                             name=PlayerKeypoints.KEYPOINTS_NAMES[i],
                             xy=(
-                                keypoint[0].item() * ratio_x,
-                                keypoint[1].item() * ratio_y,
+                                float(keypoint[0]) * ratio_x if torch.is_tensor(keypoint[0]) else keypoint[0] * ratio_x,
+                                float(keypoint[1]) * ratio_y if torch.is_tensor(keypoint[1]) else keypoint[1] * ratio_y,
                             )
                         )
                         for i, keypoint in enumerate(player_keypoints_detection)
@@ -325,4 +326,3 @@ class PlayerKeypointsTracker(Tracker):
         raise NoPredictFrames()
 
 
-    
