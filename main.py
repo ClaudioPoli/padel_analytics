@@ -115,7 +115,7 @@ if __name__ == "__main__":
             ),
             axis=0
         ),
-        frame_resolution_wh=video_info.resolution_wh,
+        #frame_resolution_wh=video_info.resolution_wh,
     )
 
 

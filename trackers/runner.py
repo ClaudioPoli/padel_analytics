@@ -132,9 +132,9 @@ class TrackingRunner:
                 
                 try:
                     prediction = tracker.results[frame_index]
-                except IndexError as e:
-                    print(f"runner: {str(tracker)} frame {frame_index}")
-                    raise(e)
+                except IndexError:
+                    print(f"Warning: {tracker} has no prediction for frame {frame_index}. Skipping.")
+                    continue  # Salta questo tracker per il frame corrente
                 
                 frame_rgb = prediction.draw(frame_rgb, **tracker.draw_kwargs())
 
@@ -235,18 +235,18 @@ class TrackingRunner:
         
         self.draw_and_collect_data()
 
-        
-
-    
-
-    
-
-
-        
 
 
 
-    
-    
+
+
+
+
+
+
+
+
+
+
 
 
