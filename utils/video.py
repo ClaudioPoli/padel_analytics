@@ -1,11 +1,40 @@
 """ Functions to read and save videos """
 
-from typing import Literal
+from typing import Literal, Tuple
 import cv2
 import numpy as np
 from pathlib import Path
+import os
 
 from utils import converters
+
+
+def get_codec_for_video_format(file_path: str | Path) -> Tuple[int, str]:
+    """
+    Determina il codec appropriato per il formato del file video.
+    
+    Args:
+        file_path: Percorso del file video
+    
+    Returns:
+        Tuple[int, str]: Codec FourCC e nome del formato
+    """
+    path_str = str(file_path).lower()
+    ext = os.path.splitext(path_str)[1]
+    
+    if ext == '.mp4':
+        return cv2.VideoWriter_fourcc(*"mp4v"), "MP4"
+    elif ext == '.mov':
+        return cv2.VideoWriter_fourcc(*"XVID"), "MOV"  # XVID è compatibile con MOV
+    elif ext == '.avi':
+        return cv2.VideoWriter_fourcc(*"XVID"), "AVI"
+    elif ext == '.mkv':
+        return cv2.VideoWriter_fourcc(*"X264"), "MKV"
+    elif ext in ['.wmv', '.asf']:
+        return cv2.VideoWriter_fourcc(*"WMV2"), "WMV"
+    else:
+        # Formato predefinito
+        return cv2.VideoWriter_fourcc(*"mp4v"), "MP4"
 
 
 def read_video(
@@ -53,8 +82,11 @@ def save_video(
     h: int,
     w: int,
 ):
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    out = cv2.VideoWriter(path, fourcc, float(fps), (w, h))
+    # Usa la funzione di utilità per ottenere il codec appropriato
+    fourcc, format_name = get_codec_for_video_format(path)
+    print(f"Salvando il video in formato {format_name}...")
+    
+    out = cv2.VideoWriter(str(path), fourcc, float(fps), (w, h))
     for frame in frames:
         frame_bgr = cv2.cvtColor(
             frame, 
@@ -62,3 +94,4 @@ def save_video(
         )
         out.write(frame_bgr)
     out.release()
+    print(f"Video salvato con successo in {path}")

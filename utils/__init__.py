@@ -1,2 +1,2 @@
-from .video import read_video, save_video
+from .video import read_video, save_video, get_codec_for_video_format
 from .conversions import convert_meters_to_pixel_distance, convert_pixel_distance_to_meters

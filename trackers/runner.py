@@ -96,9 +96,15 @@ class TrackingRunner:
 
         print(f"runner: Writing results into {str(self.inference_path)}")
 
-        fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+        # Importa la funzione di utilità per il codec
+        from utils.video import get_codec_for_video_format
+        
+        # Ottieni il codec appropriato per il formato di output
+        fourcc, format_name = get_codec_for_video_format(self.inference_path)
+        print(f"Salvando il video di inferenza in formato {format_name}...")
+        
         out = cv2.VideoWriter(
-            self.inference_path,
+            str(self.inference_path),
             fourcc,
             float(self.video_info.fps),
             self.video_info.resolution_wh,
